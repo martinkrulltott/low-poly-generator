@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="container">
+    <div class="container" :class="{ 'empty': emptyContainer }" v-if="palette && palette.colors">
       <trianglify 
-        v-if="palette && palette.colors"
+        :key="trianglifyKey"
         :width=trianglifySettings.width
         :height=trianglifySettings.height
         :cellSize=trianglifySettings.cellSize
@@ -11,7 +11,7 @@
         :xColors=trianglifySettings.xColors />
     </div>
     <div class="colors" v-if="palette && palette.colors">
-      <div class="color" v-for="(n, index) in 5" :key="index" :style="{ 'background': `#${palette.colors[index]}` }">
+      <div class="color" v-for="(n, index) in 5" :key="index" :style="{ 'background-color': `#${palette.colors[index]}` }">
       </div>
     </div>
     <div class="loader" v-if="!palette || !palette.colors">Loading...</div>
@@ -31,6 +31,8 @@ export default {
     return {
       resultSize: 50,
       palette: null,
+      emptyContainer: false,
+      trianglifyKey: 0,
     }
   },
   computed: {
@@ -51,13 +53,23 @@ export default {
   },
   methods: {
     refreshPattern() {
+      this.trianglifyKey += 1;
       this.palette = this.palettes[Math.round(Math.random() * (this.resultSize - 1))];
+      this.emptyContainer = false;
     }
   },
   mounted() {
+    const refreshPattern = this.refreshPattern;
     this.$store.dispatch('loadPalettes', { resultSize: this.resultSize }).then( () => {
-      this.refreshPattern();
+      refreshPattern();
     });
+
+    setInterval(function() {
+      this.emptyContainer = true;
+      setTimeout(function() { 
+        refreshPattern();
+      }, 2000);
+    }.bind(this), 5000);
   },
 }
 </script>
@@ -77,6 +89,11 @@ export default {
         animation: reveal $i * 0.4s forwards;
       }
     }
+  }
+
+  &.empty path {
+    stroke: #fff;
+    fill: #fff;
   }
 }
 
@@ -109,6 +126,7 @@ export default {
   float: left;
   background-color: #000;
   transition: background-color .5s;
+  //TODO: Fix broken CSS transitions
 
   @for $i from 1 through 5 {
     &:nth-child(#{$i}) {
