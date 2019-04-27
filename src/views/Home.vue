@@ -1,34 +1,59 @@
 <template>
   <div>
-    <div class="container"></div>
+    <div class="container" :class="{ 'hidden': hideContainer }" >
+      <trianglify 
+        v-if="palette && palette.colors"
+        :width=trianglifySettings.width
+        :height=trianglifySettings.height
+        :cellSize=trianglifySettings.cellSize
+        :variance=trianglifySettings.variance
+        :strokeWidth=trianglifySettings.strokeWidth
+        :xColors=trianglifySettings.xColors />
+    </div>
     <div class="colors" v-if="palette && palette.colors">
       <div class="color" v-for="(n, index) in 5" :key="index" :style="{ 'background': `#${palette.colors[index]}` }">
       </div>
     </div>
-    <div class="loader">Loading...</div>
+    <div class="loader" v-if="!palette || !palette.colors">Loading...</div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import { Trianglify } from 'vue-trianglify'
 
 export default {
   name: 'home',
   components: {
+    'trianglify': Trianglify,
   },
   data: () => {
     return {
       resultSize: 50,
       palette: null,
+      hideContainer: true,
     }
   },
-  computed: mapState([
-    'palettes',
-  ]),
+  computed: {
+    ...mapState([
+      'palettes',
+    ]),
+    trianglifySettings: function () {
+      const colors = this.palette ? this.palette.colors : null;
+      return {
+        width: window.innerWidth,
+        height: window.innerHeight - 16,
+        cellSize: 110 * window.devicePixelRatio,
+        variance: 1,
+        strokeWidth: 2,
+        xColors: colors,
+      }
+    }
+  },
   methods: {
     refreshPattern() {
       this.palette = this.palettes[Math.round(Math.random() * (this.resultSize - 1))];
-      const cellSize = 110 * window.devicePixelRatio;
+      this.hideContainer = false;
     }
   },
   mounted() {
@@ -46,13 +71,17 @@ export default {
   overflow: hidden;
 
   path {
-    opacity: 0;
-    
+    opacity: 1;
+
     @for $i from 1 through 10 {
       &:nth-child(#{$i}n + #{$i}) {
         transition: fill .5s linear $i * 0.1s, stroke .5s linear 0.3 + $i * 0.1s, opacity $i * 0.4s;
       }
     }
+  }
+
+  &.hidden path {
+    opacity: 0;
   }
 }
 
