@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="container"></div>
-    <div class="colors">
-      <div class="color" v-for="(n, index) in 5" :key="index">
+    <div class="colors" v-if="palette && palette.colors">
+      <div class="color" v-for="(n, index) in 5" :key="index" :style="{ 'background': `#${palette.colors[index]}` }">
       </div>
     </div>
     <div class="loader">Loading...</div>
@@ -19,6 +19,7 @@ export default {
   data: () => {
     return {
       resultSize: 50,
+      palette: null,
     }
   },
   computed: mapState([
@@ -26,13 +27,14 @@ export default {
   ]),
   methods: {
     refreshPattern() {
-      const palette = palettes[Math.round(Math.random() * (this.resultSize - 1))];
-      const colors = new Array();
+      this.palette = this.palettes[Math.round(Math.random() * (this.resultSize - 1))];
       const cellSize = 110 * window.devicePixelRatio;
     }
   },
   mounted() {
-    this.$store.dispatch('loadPalettes', { resultSize: this.resultSize });
+    this.$store.dispatch('loadPalettes', { resultSize: this.resultSize }).then( () => {
+      this.refreshPattern();
+    });
   },
 }
 </script>

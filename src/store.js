@@ -18,12 +18,17 @@ export default new Vuex.Store({
   },
   actions: {
     loadPalettes(context, { resultSize }) {
-      axios
-        .get(`https://www.colourlovers.com/api/palettes/top?numResults=${resultSize}&format=json`)
-        .then(r => r.data)
-        .then((response) => {
-          context.commit('SET_PALETTES', response);
-        });
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`https://www.colourlovers.com/api/palettes/top?numResults=${resultSize}&format=json`)
+          .then(r => r.data)
+          .then((response) => {
+            context.commit('SET_PALETTES', response);
+            resolve();
+          }).catch((error) => {
+            reject(error.response);
+          });
+      });
     },
   },
 });

@@ -18,5 +18,6 @@ export default {
 <style lang="scss">
 body {
   background: #000;
+  margin: 0;
 }
 </style>
