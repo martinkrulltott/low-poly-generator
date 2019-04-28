@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container" :class="{ 'empty': emptyContainer }" v-if="palette && palette.colors">
+    <div class="container" :class="{ 'empty': empty }" v-if="palette && palette.colors">
       <trianglify 
         :key="trianglifyKey"
         :width=trianglifySettings.width
@@ -11,7 +11,7 @@
         :xColors=trianglifySettings.xColors />
     </div>
     <div class="colors" v-if="palette && palette.colors">
-      <div class="color" v-for="(n, index) in 5" :key="index" :style="{ 'background-color': `#${palette.colors[index]}` }">
+      <div :class="{ 'empty': empty }" class="color" v-for="(n, index) in 5" :key="index" :style="[ !empty ? { 'background-color': `#${palette.colors[index]}` } : {}]">
       </div>
     </div>
     <div class="loader" v-if="!palette || !palette.colors">Loading...</div>
@@ -31,7 +31,7 @@ export default {
     return {
       resultSize: 50,
       palette: null,
-      emptyContainer: false,
+      empty: true,
       trianglifyKey: 0,
     }
   },
@@ -55,7 +55,7 @@ export default {
     refreshPattern() {
       this.trianglifyKey += 1;
       this.palette = this.palettes[Math.round(Math.random() * (this.resultSize - 1))];
-      this.emptyContainer = false;
+      this.empty = false;
     }
   },
   mounted() {
@@ -65,11 +65,11 @@ export default {
     });
 
     setInterval(function() {
-      this.emptyContainer = true;
+      this.empty = true;
       setTimeout(function() { 
         refreshPattern();
       }, 2000);
-    }.bind(this), 5000);
+    }.bind(this), 12000);
   },
 }
 </script>
@@ -116,7 +116,7 @@ export default {
   position: absolute;
   bottom: 0;
   width: 100%;
-  border-top: 1px solid #000;
+  border-top: 1px solid #fff;
 }
 
 .color {
@@ -124,14 +124,20 @@ export default {
   width: 20%;
   display: inline-block;
   float: left;
-  background-color: #000;
+  background-color: #fff;
   transition: background-color .5s;
-  //TODO: Fix broken CSS transitions
+  opacity: 0;
 
   @for $i from 1 through 5 {
     &:nth-child(#{$i}) {
       transition-delay: $i * 0.1s;
+      animation: reveal 0.5s forwards;
+      animation-delay: $i * 0.1s;
     }
+  }
+
+  &.empty {
+    background-color: #fff;
   }
 }
 </style>
