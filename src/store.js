@@ -20,7 +20,7 @@ export default new Vuex.Store({
     loadPalettes(context, { resultSize }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`https://www.colourlovers.com/api/palettes/top?numResults=${resultSize}&format=json`)
+          .get(`https://cors-anywhere.herokuapp.com/https://www.colourlovers.com/api/palettes/top?numResults=${resultSize}&format=json`)
           .then(r => r.data)
           .then((response) => {
             context.commit('SET_PALETTES', response);
