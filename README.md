@@ -1,4 +1,8 @@
-# low-poly-generator
+# Low Poly Generator
+
+Generates a low poly pattern using [Trainglify](https://github.com/qrohlf/trianglify) and colors from [ColourLovers](https://www.colourlovers.com/api).
+
+Live demo: https://martinkrulltott.github.io/low-poly-generator/
 
 ## Project setup
 ```
@@ -15,20 +19,7 @@ npm run serve
 npm run build
 ```
 
-### Run your tests
-```
-npm run test
-```
-
 ### Lints and fixes files
 ```
 npm run lint
 ```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container" :class="{ 'empty': empty }" v-if="palette && palette.colors">
-      <trianglify 
+      <trianglify
         :key="trianglifyKey"
         :width=trianglifySettings.width
         :height=trianglifySettings.height
@@ -11,7 +11,11 @@
         :xColors=trianglifySettings.xColors />
     </div>
     <div class="colors" v-if="palette && palette.colors">
-      <div :class="{ 'empty': empty }" class="color" v-for="(n, index) in 5" :key="index" :style="[ !empty ? { 'background-color': `#${palette.colors[index]}` } : {}]">
+      <div :class="{ 'empty': empty }"
+        class="color"
+        v-for="(n, index) in 5"
+        :key="index"
+        :style="[ !empty ? { 'background-color': `#${palette.colors[index]}` } : {}]">
       </div>
     </div>
     <div class="loader" v-if="!palette || !palette.colors">Loading...</div>
@@ -20,26 +24,24 @@
 
 <script>
 import { mapState } from 'vuex';
-import { Trianglify } from 'vue-trianglify'
+import { Trianglify } from 'vue-trianglify';
 
 export default {
   name: 'home',
   components: {
-    'trianglify': Trianglify,
+    trianglify: Trianglify,
   },
-  data: () => {
-    return {
-      resultSize: 50,
-      palette: null,
-      empty: true,
-      trianglifyKey: 0,
-    }
-  },
+  data: () => ({
+    resultSize: 50,
+    palette: null,
+    empty: true,
+    trianglifyKey: 0,
+  }),
   computed: {
     ...mapState([
       'palettes',
     ]),
-    trianglifySettings: function () {
+    trianglifySettings() {
       const colors = this.palette ? this.palette.colors : null;
       return {
         width: window.innerWidth,
@@ -48,30 +50,30 @@ export default {
         variance: 1,
         strokeWidth: 2,
         xColors: colors,
-      }
-    }
+      };
+    },
   },
   methods: {
     refreshPattern() {
       this.trianglifyKey += 1;
       this.palette = this.palettes[Math.round(Math.random() * (this.resultSize - 1))];
       this.empty = false;
-    }
+    },
   },
   mounted() {
-    const refreshPattern = this.refreshPattern;
-    this.$store.dispatch('loadPalettes', { resultSize: this.resultSize }).then( () => {
+    const { refreshPattern } = this;
+    this.$store.dispatch('loadPalettes', { resultSize: this.resultSize }).then(() => {
       refreshPattern();
     });
 
-    setInterval(function() {
+    setInterval(() => {
       this.empty = true;
-      setTimeout(function() { 
+      setTimeout(() => {
         refreshPattern();
       }, 2000);
-    }.bind(this), 12000);
+    }, 12000);
   },
-}
+};
 </script>
 
 <style lang="scss">
